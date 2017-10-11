@@ -35,6 +35,8 @@ LDAP Method:
 docker run --rm -it \
     --name=kube-vault-deploy \
     -e KUBE_CLUSTER=blue.my-domain.com \
+    -e VAULT_ADDR=https://vault.my-domain.com:8200 \
+    -e VAULT_KUBE_PATH=secret/kubernetes/blue.my-domain.com/kube-config \
     -v ~/.k8s-vault-token:/vault-token:rw \
     -v $(pwd)/deploy:/scripts:ro \
     readytalk/kube-vault-deploy
@@ -49,6 +51,8 @@ docker run --rm \
     --name=kube-vault-deploy \
     -e AUTO_BUILD=true \
     -e KUBE_CLUSTER=blue.my-domain.com \
+    -e VAULT_ADDR=https://vault.my-domain.com:8200 \
+    -e VAULT_KUBE_PATH=secret/kubernetes/blue.my-domain.com/kube-config \
     -e VAULT_TOKEN=$VAULT_TOKEN \
     -v $(pwd)/deploy:/scripts:ro \
     readytalk/kube-vault-deploy
