@@ -1,8 +1,8 @@
 FROM alpine
 
-ENV VAULT_VERSION="0.8.3"
-ENV KUBECTL_VERSION="1.8.0"
-ENV HELM_VERSION="2.6.2"
+ENV VAULT_VERSION="0.9.0"
+ENV KUBECTL_VERSION="1.9.2"
+ENV HELM_VERSION="2.7.2"
 
 RUN apk update && \
   apk add bash curl zip
