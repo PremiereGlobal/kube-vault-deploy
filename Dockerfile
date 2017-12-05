@@ -5,7 +5,7 @@ ENV KUBECTL_VERSION="1.9.2"
 ENV HELM_VERSION="2.7.2"
 
 RUN apk update && \
-  apk add bash curl zip
+  apk add bash curl zip jq
 
 WORKDIR /tmp
 
