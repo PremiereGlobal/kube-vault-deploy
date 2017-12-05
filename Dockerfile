@@ -3,6 +3,7 @@ FROM alpine
 ENV VAULT_VERSION="0.9.0"
 ENV KUBECTL_VERSION="1.8.4"
 ENV HELM_VERSION="2.7.2"
+ENV TERRAFORM_VERSION="0.11.1"
 
 RUN apk update && \
   apk add bash curl zip jq
@@ -26,6 +27,13 @@ RUN curl -o helm.tar.gz -L "https://storage.googleapis.com/kubernetes-helm/helm-
   chmod +x linux-amd64/helm && \
   mv linux-amd64/helm /usr/bin && \
   rm -rf linux-amd64 helm.tar.gz
+
+# Install terraform
+RUN curl -o terraform.zip -L "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" && \
+  unzip terraform.zip && \
+  chmod +x terraform && \
+  mv terraform /usr/bin && \
+  rm -rf terraform terraform.zip
 
 VOLUME /vault-token
 VOLUME /scripts
