@@ -30,7 +30,7 @@ fi
 # Ensure VAULT_TOKEN is set (either by file or VAULT_TOKEN env var)
 if [ -z "$VAULT_TOKEN" -a "$AUTO_BUILD" == "false" ]; then
   export VAULT_TOKEN=$(cat /vault-token/.vault-token 2> /dev/null)
-elif [ -z "$VAULT_TOKEN" -a "$AUTO_BUILD" == "true"]; then
+elif [ -z "$VAULT_TOKEN" -a "$AUTO_BUILD" == "true" ]; then
   >&2 echo "Must set env VAULT_TOKEN if running as AUTO_BUILD=true."
   exit 1
 fi
