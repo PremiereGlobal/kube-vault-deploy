@@ -6,7 +6,7 @@ ENV HELM_VERSION="2.7.2"
 ENV TERRAFORM_VERSION="0.11.1"
 
 RUN apk update && \
-  apk add bash curl zip jq kamailio-mysql
+  apk add bash curl zip jq kamailio-mysql mysql-client
 
 WORKDIR /tmp
 
