@@ -6,18 +6,12 @@ VAULT_KUBE_FIELD=${VAULT_KUBE_FIELD:-"config"}
 
 # Ensure required env variables are set
 if [ -z "$VAULT_ADDR" ]; then
-  >&2 echo "VAULT_ADDR environment variable not set. See documentation."
-  exit 1
-fi
-
-if [ -z "$KUBE_CLUSTER" ]; then
-  >&2 echo "KUBE_CLUSTER environment variable not set. See documentation."
+  >&2 echo "Error: VAULT_ADDR environment variable not set. See documentation."
   exit 1
 fi
 
 if [ -z "$VAULT_KUBE_PATH" ]; then
-  >&2 echo "VAULT_KUBE_PATH environment variable not set. See documentation."
-  exit 1
+  >&2 echo "Warning: VAULT_KUBE_PATH environment variable not set.  Will not automatically be authenticated with Kubernetes.  See documentation."
 fi
 
 # Check if vault is available
@@ -52,20 +46,26 @@ if [ $? -ne 0 -a $AUTO_BUILD == "false" ]; then
  fi
 fi
 
-echo "Fetching Kubernetes config..."
-CONFIG=$(vault read -field=$VAULT_KUBE_FIELD $VAULT_KUBE_PATH)
+if [ "$VAULT_KUBE_PATH" ]; then
+  echo "Fetching Kubernetes config..."
+  CONFIG=$(vault read -field=$VAULT_KUBE_FIELD $VAULT_KUBE_PATH)
 
-if [ $? -ne 0 ]; then
-  >&2 echo "Error reading kube config from vault"
-  exit 1
+  if [ $? -ne 0 ]; then
+    >&2 echo "Error reading kube config from vault"
+    exit 1
+  fi
+
+  mkdir ~/.kube
+  echo "$CONFIG" >> ~/.kube/config
 fi
 
-mkdir ~/.kube
-echo "$CONFIG" >> ~/.kube/config
+cd /scripts
 
-if [ -e "/scripts/$DEPLOY_SCRIPT" ]; then
-  /scripts/$DEPLOY_SCRIPT
-else
-  >&2 echo "No deploy script found.  See documentation on DEPLOY_SCRIPT environment variable."
-  exit 1
-fi
+# if [ -e "/scripts/$DEPLOY_SCRIPT" ]; then
+#   /scripts/$DEPLOY_SCRIPT
+# else
+#   >&2 echo "No deploy script found.  See documentation on DEPLOY_SCRIPT environment variable."
+#   exit 1
+# fi
+
+exec "$@"
