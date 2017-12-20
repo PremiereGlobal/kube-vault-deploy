@@ -43,7 +43,7 @@ RUN LATEST_VAULT_RELEASE=$(curl -s https://api.github.com/repos/hashicorp/vault/
 VOLUME /vault-token
 VOLUME /kube-config
 
-ENV KUBECONFIG=/kube-config
+ENV KUBECONFIG=/kube-config/config
 
 COPY entrypoint.sh /entrypoint.sh
 
