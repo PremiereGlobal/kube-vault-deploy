@@ -1,6 +1,6 @@
-# Kubernetes Deployments w/ Vault
+# Kubernetes Auth w/ Vault
 
-Docker container for deploying to Kubernetes (via `kubectl` or `helm`) using Vault to authenticate.
+Docker container for authenticting to Kubernetes using Vault.
 
 <!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
