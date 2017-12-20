@@ -47,6 +47,7 @@ CLUSTER_NAME=$(vault read -field=cluster-name $SECRET_PATH)
 USER_NAME=$(vault read -field=user-name $SECRET_PATH)
 USER_TOKEN=$(vault read -field=user-token $SECRET_PATH)
 DEFAULT_NAMESPACE=$(vault read -field=default-namespace $SECRET_PATH)
+CONTEXT_NAME=${CONTEXT_NAME:-$CLUSTER_NAME-$USER_NAME}
 
 # Create/Update kubectl cluster entry
 kubectl config set-cluster $CLUSTER_NAME \
@@ -58,10 +59,10 @@ kubectl config set-cluster $CLUSTER_NAME \
 kubectl config set-credentials $USER_NAME --token=$USER_TOKEN
 
 # Create/Update kubectl context
-kubectl config set-context $CLUSTER_NAME \
+kubectl config set-context $CONTEXT_NAME \
 --cluster=$CLUSTER_NAME \
 --user=$USER_NAME \
 --namespace=$DEFAULT_NAMESPACE
 
 # Use the newly updated context
-kubectl config use-context $CLUSTER_NAME
+kubectl config use-context $CONTEXT_NAME
