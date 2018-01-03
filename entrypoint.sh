@@ -1,71 +1,44 @@
 #!/bin/bash
 
-AUTO_BUILD=${AUTO_BUILD:-"false"}
-DEPLOY_SCRIPT=${DEPLOY_SCRIPT:-"deploy.sh"}
-VAULT_KUBE_FIELD=${VAULT_KUBE_FIELD:-"config"}
+# DEPLOY_SCRIPT=${DEPLOY_SCRIPT:-"deploy.sh"}
+# VAULT_KUBE_FIELD=${VAULT_KUBE_FIELD:-"config"}
+#
+# SECRET_PATH=secret/kubernetes/$CLUSTER_NAME/$ACCOUNT_NAME/kube-config
+# vault read -field=cluster-ca $SECRET_PATH > ./ca.crt
+# CLUSTER_CA_FILE=./ca.crt
+# CLUSTER_SERVER=$(vault read -field=cluster-server $SECRET_PATH)
+# CLUSTER_NAME=$(vault read -field=cluster-name $SECRET_PATH)
+# USER_NAME=$(vault read -field=user-name $SECRET_PATH)
+# USER_TOKEN=$(vault read -field=user-token $SECRET_PATH)
+# DEFAULT_NAMESPACE=$(vault read -field=default-namespace $SECRET_PATH)
+# CONTEXT_NAME=${CONTEXT_NAME:-$CLUSTER_NAME-$USER_NAME}
+# AUTHINFO_NAME=${AUTHINFO_NAME:-$USER_NAME-$CLUSTER_NAME}
 
-# Ensure required env variables are set
-if [ -z "$VAULT_ADDR" ]; then
-  >&2 echo "Error: VAULT_ADDR environment variable not set. See documentation."
-  exit 1
-fi
+CONTEXT_NAME=default
+CLUSTER_NAME=default
+AUTHINFO_NAME=default
+DEFAULT_NAMESPACE=${DEFAULT_NAMESPACE:-default}
 
-if [ -z "$VAULT_KUBE_PATH" ]; then
-  >&2 echo "Warning: VAULT_KUBE_PATH environment variable not set.  Will not automatically be authenticated with Kubernetes.  See documentation."
-fi
+echo "$CLUSTER_CA" > /cluster.ca
 
-# Check if vault is available
-vault status > /dev/null 2>&1
-if [ $? -ne 0 ]; then
-  >&2 echo "Error reaching vault ($VAULT_ADDR)"
-  exit 1
-fi
+# Create/Update kubectl cluster entry
+kubectl config set-cluster $CLUSTER_NAME \
+  --embed-certs=true \
+  --server=$CLUSTER_SERVER \
+  --certificate-authority=/cluster.ca
 
-# Ensure VAULT_TOKEN is set (either by file or VAULT_TOKEN env var)
-if [ -z "$VAULT_TOKEN" -a "$AUTO_BUILD" == "false" ]; then
-  export VAULT_TOKEN=$(cat /vault-token/.vault-token 2> /dev/null)
-elif [ -z "$VAULT_TOKEN" -a "$AUTO_BUILD" == "true"]; then
-  >&2 echo "Must set env VAULT_TOKEN if running as AUTO_BUILD=true."
-  exit 1
-fi
+# Create/Update kubectl user credentials
+kubectl config set-credentials $AUTHINFO_NAME --token="$USER_TOKEN"
 
-# Check if we're authenticated with vault, if not, and if not AUTO_BUILD, try LDAP
-vault token-lookup > /dev/null 2>&1
-if [ $? -ne 0 -a $AUTO_BUILD == "false" ]; then
- unset VAULT_TOKEN
- >&2 echo -n "Enter LDAP Username: "
- read username
- vault auth -method=ldap username=$username 2> /dev/null
+# Create/Update kubectl context
+kubectl config set-context $CONTEXT_NAME \
+--cluster=$CLUSTER_NAME \
+--user=$AUTHINFO_NAME \
+--namespace=$DEFAULT_NAMESPACE
 
- if [ $? -ne 0 ]; then
-   >&2 echo "Invalid Vault Login"
-   exit 1
- else
-   mkdir -p /k8s-vault-token
-   cp ~/.vault-token /vault-token/.vault-token
- fi
-fi
-
-if [ "$VAULT_KUBE_PATH" ]; then
-  echo "Fetching Kubernetes config..."
-  CONFIG=$(vault read -field=$VAULT_KUBE_FIELD $VAULT_KUBE_PATH)
-
-  if [ $? -ne 0 ]; then
-    >&2 echo "Error reading kube config from vault"
-    exit 1
-  fi
-
-  mkdir ~/.kube
-  echo "$CONFIG" >> ~/.kube/config
-fi
+# Use the newly updated context
+kubectl config use-context $CONTEXT_NAME
 
 cd /scripts
-
-# if [ -e "/scripts/$DEPLOY_SCRIPT" ]; then
-#   /scripts/$DEPLOY_SCRIPT
-# else
-#   >&2 echo "No deploy script found.  See documentation on DEPLOY_SCRIPT environment variable."
-#   exit 1
-# fi
 
 exec "$@"
