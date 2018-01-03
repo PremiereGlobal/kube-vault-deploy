@@ -56,12 +56,12 @@ kubectl config set-cluster $CLUSTER_NAME \
   --certificate-authority=$CLUSTER_CA_FILE
 
 # Create/Update kubectl user credentials
-kubectl config set-credentials $USER_NAME --token=$USER_TOKEN
+kubectl config set-credentials $USER_NAME-$CLUSTER_NAME --token=$USER_TOKEN
 
 # Create/Update kubectl context
 kubectl config set-context $CONTEXT_NAME \
 --cluster=$CLUSTER_NAME \
---user=$USER_NAME \
+--user=$USER_NAME-$CLUSTER_NAME \
 --namespace=$DEFAULT_NAMESPACE
 
 # Use the newly updated context
