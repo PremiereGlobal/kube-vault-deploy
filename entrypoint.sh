@@ -1,19 +1,5 @@
 #!/bin/bash
 
-# DEPLOY_SCRIPT=${DEPLOY_SCRIPT:-"deploy.sh"}
-# VAULT_KUBE_FIELD=${VAULT_KUBE_FIELD:-"config"}
-#
-# SECRET_PATH=secret/kubernetes/$CLUSTER_NAME/$ACCOUNT_NAME/kube-config
-# vault read -field=cluster-ca $SECRET_PATH > ./ca.crt
-# CLUSTER_CA_FILE=./ca.crt
-# CLUSTER_SERVER=$(vault read -field=cluster-server $SECRET_PATH)
-# CLUSTER_NAME=$(vault read -field=cluster-name $SECRET_PATH)
-# USER_NAME=$(vault read -field=user-name $SECRET_PATH)
-# USER_TOKEN=$(vault read -field=user-token $SECRET_PATH)
-# DEFAULT_NAMESPACE=$(vault read -field=default-namespace $SECRET_PATH)
-# CONTEXT_NAME=${CONTEXT_NAME:-$CLUSTER_NAME-$USER_NAME}
-# AUTHINFO_NAME=${AUTHINFO_NAME:-$USER_NAME-$CLUSTER_NAME}
-
 # Fail if any command fails
 set -e
 
