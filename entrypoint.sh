@@ -10,7 +10,7 @@ set +x
 # https://github.com/ReadyTalk/vault-to-envs
 if [[ -n $SECRET_CONFIG ]]; then
   SECRET_VARS=$(v2e)
-  eval $SECRET_VARS
+  eval "$SECRET_VARS"
 fi
 
 CONTEXT_NAME=default
