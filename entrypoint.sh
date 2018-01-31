@@ -14,6 +14,19 @@
 # CONTEXT_NAME=${CONTEXT_NAME:-$CLUSTER_NAME-$USER_NAME}
 # AUTHINFO_NAME=${AUTHINFO_NAME:-$USER_NAME-$CLUSTER_NAME}
 
+# Fail if any command fails
+set -e
+
+# Dealing w/ secrets, don't output any commands
+set +x
+
+# If the deploy needs additional secrets, get them using
+# https://github.com/ReadyTalk/vault-to-envs
+if [[ -n $SECRET_CONFIG ]]; then
+  SECRET_VARS=$(v2e)
+  eval $SECRET_VARS
+fi
+
 CONTEXT_NAME=default
 CLUSTER_NAME=default
 AUTHINFO_NAME=default
