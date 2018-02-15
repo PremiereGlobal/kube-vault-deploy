@@ -33,12 +33,21 @@ RUN curl -L https://kubernetes-helm.storage.googleapis.com/helm-$(curl -s https:
   && mv linux-amd64/helm /usr/local/bin/helm \
   && rm -rf linux-amd64
 
+# Install vault client
 RUN LATEST_VAULT_RELEASE=$(curl -s https://api.github.com/repos/hashicorp/vault/tags | jq --raw-output .[0].name[1:]) \
   && curl -L https://releases.hashicorp.com/vault/${LATEST_VAULT_RELEASE}/vault_${LATEST_VAULT_RELEASE}_linux_amd64.zip -o vault.zip \
   && unzip vault.zip \
   && rm vault.zip \
   && chmod +x vault \
   && mv vault /usr/local/bin/vault
+
+# Install vault-to-envs
+RUN LATEST_V2E_RELEASE=$(curl -s https://api.github.com/repos/readytalk/vault-to-envs/releases/latest | grep tag_name | cut -d '"' -f 4) \
+  && curl -LO https://github.com/readytalk/vault-to-envs/releases/download/${LATEST_V2E_RELEASE}/v2e.zip -o v2e.zip \
+  && unzip v2e.zip \
+  && rm v2e.zip \
+  && chmod +x v2e \
+  && mv v2e /usr/local/bin/v2e
 
 VOLUME /vault-token
 VOLUME /scripts
