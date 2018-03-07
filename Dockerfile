@@ -6,7 +6,7 @@ RUN apk update && \
 RUN \
   set -x && \
   apk update && \
-  apk -Uuv add groff less python py2-pip bash jq curl wget ca-certificates openssl zip && \
+  apk -Uuv add groff less python py2-pip bash jq curl wget ca-certificates openssl zip git && \
   pip install awscli yq && \
   apk --purge -v del py2-pip && \
   rm /var/cache/apk/*
