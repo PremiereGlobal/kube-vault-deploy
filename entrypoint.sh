@@ -31,12 +31,12 @@ if [ $? -ne 0 -a $AUTO_BUILD == "false" ]; then
  unset VAULT_TOKEN
  >&2 echo -n "Enter LDAP Username: "
  read username
- vault login -method=ldap username=$username 2> /dev/null
-
+ vault login -method=ldap username=$username
  if [ $? -ne 0 ]; then
    >&2 echo "Invalid Vault Login"
    exit 1
  fi
+ export VAULT_TOKEN=$(cat /root/.vault-token 2> /dev/null)
 fi
 
 # If the deploy needs additional secrets, get them using
