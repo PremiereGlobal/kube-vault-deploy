@@ -1,7 +1,7 @@
 FROM alpine
 
 RUN apk update && \
-  apk add bash curl zip jq
+  apk add bash curl zip jq git
 
 RUN \
   set -x && \
