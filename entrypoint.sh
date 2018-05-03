@@ -123,6 +123,22 @@ elif [ "$CLUSTER_NAME" -o "$ACCOUNT_NAME" ]; then
   fi
 fi
 
+# Install client version of helm that matches the remote server
+if [ "$HELM_MATCH_SERVER" == "true" ]; then
+  HELM_VERSION=$(kubectl get  deploy tiller-deploy  --namespace=kube-system -o='jsonpath={.spec.template.spec.containers[0].image}' | sed 's/.*v\([0-9\.]*\)/\1/g')
+  if [ -z ${HELM_VERSION+x} ]; then
+    echo "Error: Getting Helm Tiller version from remote K8s server"
+  else
+    cd /tmp
+    curl -L https://kubernetes-helm.storage.googleapis.com/helm-v${HELM_VERSION}-linux-amd64.tar.gz -o helm.tar.gz
+    tar -zxvf helm.tar.gz
+    rm helm.tar.gz
+    chmod +x linux-amd64/helm
+    mv linux-amd64/helm /usr/local/bin/helm
+    rm -rf linux-amd64
+  fi
+fi
+
 cd /scripts
 
 exec "$@"
