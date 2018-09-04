@@ -73,6 +73,7 @@ of this parameter has the format `<VARIABLE_NAME>=<VALUE>`.
 |`VAULT_TOKEN`| Vault token to use for authentication. If not set and AUTO_BUILD=false, will prompt for LDAP credentials. | (not set) |
 |`AUTO_BUILD`| Flag that controls the behavior of the authentication mechanism.  If set to true, will not prompt for LDAP user/pass but instead will fail if `VAULT_TOKEN` is not provided. | `false` |
 |`DEPLOY_SCRIPT`| Name of a script in the `/scripts` volume mount (see next section) to execute when the container is run. | `deploy.sh` |
+|`HELM_MATCH_SERVER`| If set to `true`, downloads the helm version to match the version of the Tiller installed on the cluster. | `true` |
 
 Additional environment variables can be passed in to be used by the deployment files.
 

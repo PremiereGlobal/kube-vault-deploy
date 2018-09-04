@@ -1,5 +1,7 @@
 FROM alpine
 
+ENV HELM_VERSION=2.10.0
+
 RUN apk update && \
   apk add bash curl zip jq
 
@@ -26,7 +28,7 @@ RUN curl -LO https://github.com/kubernetes/kops/releases/download/$(curl -s http
     && kops version
 
 # Install helm
-RUN curl -L https://kubernetes-helm.storage.googleapis.com/helm-$(curl -s https://api.github.com/repos/kubernetes/helm/releases/latest | grep tag_name | cut -d '"' -f 4)-linux-amd64.tar.gz -o helm.tar.gz \
+RUN curl -L https://storage.googleapis.com/kubernetes-helm/helm-v${HELM_VERSION}-linux-amd64.tar.gz -o helm.tar.gz \
   && tar -zxvf helm.tar.gz \
   && rm helm.tar.gz \
   && chmod +x linux-amd64/helm \
@@ -53,6 +55,8 @@ VOLUME /vault-token
 VOLUME /scripts
 
 WORKDIR /scripts
+
+ENV HELM_MATCH_SERVER=true
 
 COPY entrypoint.sh /entrypoint.sh
 
