@@ -1,4 +1,4 @@
-### 0.2.0 (not released)
+### 0.2.0
 
 * Locked `helm` version to `2.10.0`
 * Locked `vault` version to `0.10.4`
