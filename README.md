@@ -37,7 +37,7 @@ docker run --rm -it \
     -e KUBE_CLUSTER=blue.my-domain.com \
     -e VAULT_ADDR=https://vault.my-domain.com:8200 \
     -e VAULT_KUBE_PATH=secret/kubernetes/blue.my-domain.com/kube-config \
-    -v ~/.k8s-vault-token:/vault-token:rw \
+    -v ~/.vault-token-deploy:/vault-token:rw \
     -v $(pwd)/deploy:/scripts:ro \
     readytalk/kube-vault-deploy
 ```
@@ -66,12 +66,13 @@ of this parameter has the format `<VARIABLE_NAME>=<VALUE>`.
 
 | Variable       | Description                                  | Default/Required |
 |----------------|----------------------------------------------|---------|
-|`KUBE_CLUSTER`| This is the name of the Kubernetes cluster you want to deploy to.  For example `blue.my-domain.com`. | required |
 |`VAULT_ADDR`| The full address of the instance of vault to connect to. For example `https://vault.my-domain.com:8200` | required |
-|`VAULT_KUBE_PATH`| Path within Vault that contains the kube config data. | required |
-|`VAULT_KUBE_FIELD`| Field within `VAULT_KUBE_PATH` that contains the Kubernetes config. | `config` |
-|`VAULT_TOKEN`| Vault token to use for authentication. If not set and AUTO_BUILD=false, will prompt for LDAP credentials. | (not set) |
-|`AUTO_BUILD`| Flag that controls the behavior of the authentication mechanism.  If set to true, will not prompt for LDAP user/pass but instead will fail if `VAULT_TOKEN` is not provided. | `false` |
+|`VAULT_TOKEN`| Vault token to use for authentication. If not set and AUTO_BUILD=false, will prompt for LDAP credentials. | `` |
+|`AUTO_BUILD`| Flag that controls the behavior of the authentication mechanism.  If set to `true`, will not prompt for LDAP user/pass but instead will fail if `VAULT_TOKEN` is not provided. | `false` |
+
+|`KUBE_CLUSTER`| This is the name of the Kubernetes cluster you want to deploy to.  For example `blue.my-domain.com`. | required |
+
+|`SECRET_CONFIG`| JSON text representing *&&&&&&&***** | `` |
 |`DEPLOY_SCRIPT`| Name of a script in the `/scripts` volume mount (see next section) to execute when the container is run. | `deploy.sh` |
 |`HELM_MATCH_SERVER`| If set to `true`, downloads the helm version to match the version of the Tiller installed on the cluster. | `true` |
 
@@ -86,7 +87,7 @@ format: `<HOST_DIR>:<CONTAINER_DIR>[:PERMISSIONS]`.
 | Container path  | Permissions | Description |
 |-----------------|-------------|-------------|
 |`/scripts`| ro | This location contains deploy scripts from your host that need to be accessible by the application. |
-|`/vault-token`| rw | This is an optional volume where the application stores the authenticated vault token. It is recommended this not be set for production/pipeline jobs.  For local development, it is recommended you mount this to something like `~/.k8s-vault-token` on the host so that you don't have to auth every time you run the container. |
+|`/vault-token`| rw | This is an optional volume where the application stores the authenticated vault token. It is recommended this not be set for production/pipeline jobs.  For local development, it is recommended you mount this to  `~/.vault-token` (be sure to create that file first or Docker will create it as a directory and it will fail) on the host so that you don't have to auth every time you run the container. |
 
 ## Deployment Scripts
 

@@ -1,43 +1,12 @@
 #!/bin/bash
 
-AUTO_BUILD=${AUTO_BUILD:-"false"}
-DEPLOY_SCRIPT=${DEPLOY_SCRIPT:-"deploy.sh"}
-VAULT_KUBE_FIELD=${VAULT_KUBE_FIELD:-"config"}
+# Fail if any command fails
+# Dealing w/ secrets, don't output any commands
+set -e
+# set +x
 
-# Ensure required env variables are set
-if [ -z "$VAULT_ADDR" ]; then
-  >&2 echo "Error: VAULT_ADDR environment variable not set. See documentation."
-  exit 1
-fi
-
-# Check if vault is available
-vault status > /dev/null 2>&1
-if [ $? -ne 0 ]; then
-  >&2 echo "Error reaching vault ($VAULT_ADDR)"
-  exit 1
-fi
-
-# Ensure VAULT_TOKEN is set (either by file or VAULT_TOKEN env var)
-if [ -z "$VAULT_TOKEN" -a "$AUTO_BUILD" == "false" ]; then
-  export VAULT_TOKEN=$(cat /root/.vault-token 2> /dev/null)
-elif [ -z "$VAULT_TOKEN" -a "$AUTO_BUILD" == "true"]; then
-  >&2 echo "Must set env VAULT_TOKEN if running as AUTO_BUILD=true."
-  exit 1
-fi
-
-# Check if we're authenticated with vault, if not, and if not AUTO_BUILD, try LDAP
-vault token lookup > /dev/null 2>&1
-if [ $? -ne 0 -a $AUTO_BUILD == "false" ]; then
- unset VAULT_TOKEN
- >&2 echo -n "Enter LDAP Username: "
- read username
- vault login -method=ldap username=$username
- if [ $? -ne 0 ]; then
-   >&2 echo "Invalid Vault Login"
-   exit 1
- fi
- export VAULT_TOKEN=$(cat /root/.vault-token 2> /dev/null)
-fi
+# Ensure that we're authenticated with vault
+/helper/vault.sh
 
 # If the deploy needs additional secrets, get them using
 # https://github.com/ReadyTalk/vault-to-envs
@@ -125,7 +94,7 @@ fi
 
 # Install client version of helm that matches the remote server
 if [ "$HELM_MATCH_SERVER" == "true" ]; then
-  ./helm_match_server.sh
+  /helper/helm_match_server.sh
 fi
 
 cd /scripts

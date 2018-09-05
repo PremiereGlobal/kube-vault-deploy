@@ -1,7 +1,5 @@
 FROM alpine
 
-ENV HELM_VERSION=2.10.0
-
 RUN apk update && \
   apk add bash curl zip jq
 
@@ -14,6 +12,9 @@ RUN \
   rm /var/cache/apk/*
 
 WORKDIR /tmp
+
+ENV VAULT_VERSION=0.10.4
+ENV HELM_VERSION=2.10.0
 
 # Install kubectl
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl \
@@ -33,15 +34,16 @@ RUN curl -L https://storage.googleapis.com/kubernetes-helm/helm-v${HELM_VERSION}
   && rm helm.tar.gz \
   && chmod +x linux-amd64/helm \
   && mv linux-amd64/helm /usr/local/bin/helm \
-  && rm -rf linux-amd64
+  && rm -rf linux-amd64 \
+  && helm version -c
 
 # Install vault client
-RUN LATEST_VAULT_RELEASE=$(curl -s https://api.github.com/repos/hashicorp/vault/tags | jq --raw-output .[0].name[1:]) \
-  && curl -L https://releases.hashicorp.com/vault/${LATEST_VAULT_RELEASE}/vault_${LATEST_VAULT_RELEASE}_linux_amd64.zip -o vault.zip \
+RUN curl -L https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip -o vault.zip \
   && unzip vault.zip \
   && rm vault.zip \
   && chmod +x vault \
-  && mv vault /usr/local/bin/vault
+  && mv vault /usr/local/bin/vault \
+  && vault version
 
 # Install vault-to-envs
 RUN LATEST_V2E_RELEASE=$(curl -s https://api.github.com/repos/readytalk/vault-to-envs/releases/latest | grep tag_name | cut -d '"' -f 4) \
@@ -51,13 +53,18 @@ RUN LATEST_V2E_RELEASE=$(curl -s https://api.github.com/repos/readytalk/vault-to
   && chmod +x v2e \
   && mv v2e /usr/local/bin/v2e
 
-VOLUME /vault-token
+RUN touch /vault-token && ln -s /vault-token /root/.vault-token
+
 VOLUME /scripts
 
 WORKDIR /scripts
 
+ENV AUTO_BUILD=false
 ENV HELM_MATCH_SERVER=true
+ENV DEPLOY_SCRIPT=deploy.sh
 
+COPY helper /helper
 COPY entrypoint.sh /entrypoint.sh
+
 
 ENTRYPOINT [ "/entrypoint.sh" ]

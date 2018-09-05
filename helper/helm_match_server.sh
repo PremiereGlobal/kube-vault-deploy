@@ -1,7 +1,7 @@
 #!/bin/bash
 
 HELM_MATCH_VERSION=$(kubectl get  deploy tiller-deploy  --namespace=kube-system -o='jsonpath={.spec.template.spec.containers[0].image}' | sed 's/.*v\([0-9\.]*\)/\1/g')
-if [ -z ${HELM_MATCH_VERSION+x} ]; then
+if [ -z ${HELM_MATCH_VERSION} ]; then
   echo "Error: Getting Helm Tiller version from remote K8s server"
   exit 1
 else
