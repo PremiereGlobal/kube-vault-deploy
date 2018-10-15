@@ -38,8 +38,9 @@ fi
 if [[ "$USING_K8S" == "true" ]]; then
   /helper/version_kube.sh
   /helper/version_helm.sh
-  /helper/version_kops.sh
 fi
+
+/helper/version_kops.sh
 
 if [[ "$@" == "version" ]]; then
   get_versions
@@ -55,4 +56,4 @@ fi
 
 cd /scripts
 
-$@
+exec "$@"
