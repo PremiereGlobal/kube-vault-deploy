@@ -10,6 +10,7 @@ get_versions
 
 USING_K8S="false"
 USING_VAULT="false"
+cd /bin-cache
 
 # Set up Vault (if applicable)
 /helper/vault.sh
