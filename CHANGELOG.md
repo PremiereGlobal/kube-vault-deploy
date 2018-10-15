@@ -1,3 +1,6 @@
+### 0.2.3
+* Fix read-only `/scripts` mount issue
+
 ### 0.2.2
 * Fixed `HELM_MATCH_SERVER` to only download new version if it differs the existing one
 * Added additional options for custom versioning of tools
