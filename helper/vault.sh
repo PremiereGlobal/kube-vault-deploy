@@ -2,7 +2,7 @@
 
 # Ensure that $VAULT_ADDR is set
 if [ -z "${VAULT_ADDR}" ]; then
-  >&2 echo "Error: VAULT_ADDR environment variable not set. See documentation."
+  >&2 echo "Vault not configured, continuing..."
   exit 1
 fi
 

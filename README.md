@@ -69,12 +69,15 @@ of this parameter has the format `<VARIABLE_NAME>=<VALUE>`.
 |`VAULT_ADDR`| The full address of the instance of vault to connect to. For example `https://vault.my-domain.com:8200` | required |
 |`VAULT_TOKEN`| Vault token to use for authentication. If not set and AUTO_BUILD=false, will prompt for LDAP credentials. | `` |
 |`AUTO_BUILD`| Flag that controls the behavior of the authentication mechanism.  If set to `true`, will not prompt for LDAP user/pass but instead will fail if `VAULT_TOKEN` is not provided. | `false` |
-
 |`KUBE_CLUSTER`| This is the name of the Kubernetes cluster you want to deploy to.  For example `blue.my-domain.com`. | required |
-
 |`SECRET_CONFIG`| JSON text representing *&&&&&&&***** | `` |
-|`DEPLOY_SCRIPT`| Name of a script in the `/scripts` volume mount (see next section) to execute when the container is run. | `deploy.sh` |
 |`HELM_MATCH_SERVER`| If set to `true`, downloads the helm version to match the version of the Tiller installed on the cluster. | `true` |
+|`HELM_VERSION`| If set, overrides the container version of helm with the specified version. | ` ` |
+|`KUBE_MATCH_SERVER`| If set to `true`, downloads the kubectl version to match the version of the cluster. | `true` |
+|`KUBE_VERSION`| If set, overrides the container version of kubectl with the specified version. | ` ` |
+|`KOPS_VERSION`| If set, overrides the container version of kops with the specified version. | ` ` |
+|`VAULT_MATCH_SERVER`| If set to `true`, downloads the vault version to match the version of the cluster. | `true` |
+|`VAULT_VERSION`| If set, overrides the container version of Vault with the specified version. | ` ` |
 
 Additional environment variables can be passed in to be used by the deployment files.
 
@@ -88,6 +91,7 @@ format: `<HOST_DIR>:<CONTAINER_DIR>[:PERMISSIONS]`.
 |-----------------|-------------|-------------|
 |`/scripts`| ro | This location contains deploy scripts from your host that need to be accessible by the application. |
 |`/vault-token`| rw | This is an optional volume where the application stores the authenticated vault token. It is recommended this not be set for production/pipeline jobs.  For local development, it is recommended you mount this to  `~/.vault-token` (be sure to create that file first or Docker will create it as a directory and it will fail) on the host so that you don't have to auth every time you run the container. |
+|`/bin-cache`| rw | This is an optional volume where custom binary versions (kubectl, vault, etc) will be stored.  This can be mounted locally to cache these binaries so they don't have to be downloaded every run. |
 
 ## Deployment Scripts
 

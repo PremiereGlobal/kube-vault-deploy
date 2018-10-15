@@ -1,3 +1,14 @@
+### 0.2.2
+* Fixed `HELM_MATCH_SERVER` to only download new version if it differs the existing one
+* Added additional options for custom versioning of tools
+  * 'HELM_VERSION'
+  * 'KUBE_MATCH_SERVER'
+  * 'KUBE_VERSION'
+  * 'KOPS_VERSION'
+  * 'VAULT_MATCH_SERVER'
+  * 'VAULT_VERSION'
+* Added VOLUME `/bin-cache` for binaries so they can be cached locally if repeatedly using custom version
+
 ### 0.2.1
 * Fixed issue with script failing when not using Kubernetes
 

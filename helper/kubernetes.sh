@@ -80,9 +80,9 @@ elif [ "$CLUSTER_NAME" -o "$ACCOUNT_NAME" ]; then
     echo "Error: Need to specify KUBE_CLUSTER and KUBE_ACCOUNT to authenticate with Kubernetes"
     exit 1
   fi
+else
+  echo "Kubernetes not configured, continuing..."
+  exit 1
 fi
 
-# Install client version of helm that matches the remote server
-if [[ "$USING_K8S" == true && "$HELM_MATCH_SERVER" == "true" ]]; then
-  /helper/helm_match_server.sh
-fi
+exit 0

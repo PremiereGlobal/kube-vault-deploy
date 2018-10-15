@@ -13,58 +13,39 @@ RUN \
 
 WORKDIR /tmp
 
-ENV VAULT_VERSION=0.10.4
-ENV HELM_VERSION=2.10.0
+ENV BIN_CACHE_DIR=/bin-cache
+ENV DEFAULT_KUBE_VERSION=1.9.11
+ENV DEFAULT_KOPS_VERSION=1.9.2
+ENV DEFAULT_VAULT_VERSION=0.10.4
+ENV DEFAULT_HELM_VERSION=2.10.0
+ENV AUTO_BUILD=false
+ENV HELM_MATCH_SERVER=true
+ENV KUBE_MATCH_SERVER=true
+ENV VAULT_MATCH_SERVER=true
+
+COPY helper /helper
 
 # Install kubectl
-RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl \
-      && chmod +x ./kubectl \
-      && mv ./kubectl /usr/local/bin/kubectl \
-      && kubectl version --client
+RUN /helper/install_kube.sh
 
 # Install kops
-RUN curl -LO https://github.com/kubernetes/kops/releases/download/$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/kops-linux-amd64 \
-    && chmod +x kops-linux-amd64 \
-    && mv kops-linux-amd64 /usr/local/bin/kops \
-    && kops version
+RUN /helper/install_kops.sh
 
 # Install helm
-RUN curl -L https://storage.googleapis.com/kubernetes-helm/helm-v${HELM_VERSION}-linux-amd64.tar.gz -o helm.tar.gz \
-  && tar -zxvf helm.tar.gz \
-  && rm helm.tar.gz \
-  && chmod +x linux-amd64/helm \
-  && mv linux-amd64/helm /usr/local/bin/helm \
-  && rm -rf linux-amd64 \
-  && helm version -c
+RUN /helper/install_helm.sh
 
 # Install vault client
-RUN curl -L https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip -o vault.zip \
-  && unzip vault.zip \
-  && rm vault.zip \
-  && chmod +x vault \
-  && mv vault /usr/local/bin/vault \
-  && vault version
+RUN /helper/install_vault.sh
 
 # Install vault-to-envs
-RUN LATEST_V2E_RELEASE=$(curl -s https://api.github.com/repos/readytalk/vault-to-envs/releases/latest | grep tag_name | cut -d '"' -f 4) \
-  && curl -LO https://github.com/readytalk/vault-to-envs/releases/download/${LATEST_V2E_RELEASE}/v2e.zip -o v2e.zip \
-  && unzip v2e.zip \
-  && rm v2e.zip \
-  && chmod +x v2e \
-  && mv v2e /usr/local/bin/v2e
+RUN /helper/install_v2e.sh
 
 RUN touch /vault-token && ln -s /vault-token /root/.vault-token
+
+COPY entrypoint.sh /entrypoint.sh
 
 VOLUME /scripts
 
 WORKDIR /scripts
-
-ENV AUTO_BUILD=false
-ENV HELM_MATCH_SERVER=true
-ENV DEPLOY_SCRIPT=deploy.sh
-
-COPY helper /helper
-COPY entrypoint.sh /entrypoint.sh
-
 
 ENTRYPOINT [ "/entrypoint.sh" ]
