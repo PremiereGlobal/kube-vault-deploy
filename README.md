@@ -70,7 +70,8 @@ of this parameter has the format `<VARIABLE_NAME>=<VALUE>`.
 |`VAULT_TOKEN`| Vault token to use for authentication. If not set and AUTO_BUILD=false, will prompt for LDAP credentials. | `` |
 |`AUTO_BUILD`| Flag that controls the behavior of the authentication mechanism.  If set to `true`, will not prompt for LDAP user/pass but instead will fail if `VAULT_TOKEN` is not provided. | `false` |
 |`KUBE_CLUSTER`| This is the name of the Kubernetes cluster you want to deploy to.  For example `blue.my-domain.com`. | required |
-|`SECRET_CONFIG`| JSON text representing *&&&&&&&***** | `` |
+|`SECRET_CONFIG`| JSON text representing secrets to pull from Vault. See [Secret Config](#secret-config) section below. | `` |
+|`SECRET_CONFIG_PATH`| Path for secret config file. See [Secret Config](#secret-config) section below. Will only be used if `SECRET_CONFIG` is not set. | `` |
 |`HELM_MATCH_SERVER`| If set to `true`, downloads the helm version to match the version of the Tiller installed on the cluster. | `true` |
 |`HELM_VERSION`| If set, overrides the container version of helm with the specified version. | ` ` |
 |`KUBE_MATCH_SERVER`| If set to `true`, downloads the kubectl version to match the version of the cluster. | `true` |
@@ -92,6 +93,11 @@ format: `<HOST_DIR>:<CONTAINER_DIR>[:PERMISSIONS]`.
 |`/scripts`| ro | This location contains deploy scripts from your host that need to be accessible by the application. |
 |`/vault-token`| rw | This is an optional volume where the application stores the authenticated vault token. It is recommended this not be set for production/pipeline jobs.  For local development, it is recommended you mount this to  `~/.vault-token` (be sure to create that file first or Docker will create it as a directory and it will fail) on the host so that you don't have to auth every time you run the container. |
 |`/bin-cache`| rw | This is an optional volume where custom binary versions (kubectl, vault, etc) will be stored.  This can be mounted locally to cache these binaries so they don't have to be downloaded every run. |
+
+### Secret Config
+A secret config, which defines secret values to pull from Vault, can be passed into this container.  For more detail on the config file format, see [vault-to-envs tool](https://github.com/ReadyTalk/vault-to-envs). There are several ways to get the config into this container:
+* Include an environment variable `SECRET_CONFIG` which contains the config text (json).
+* Include a file named `secret_config.json` into the working directory of the container (most commonly by volume mounts)
 
 ## Deployment Scripts
 

@@ -10,6 +10,7 @@ get_versions
 
 USING_K8S="false"
 USING_VAULT="false"
+WORK_DIR=$(pwd)
 cd /bin-cache
 
 # Set up Vault (if applicable)
@@ -24,6 +25,17 @@ if [[ "$USING_VAULT" == "true" ]]; then
   # If the deploy needs additional secrets, get them using
   # https://github.com/ReadyTalk/vault-to-envs
   if [[ -n $SECRET_CONFIG ]]; then
+    SECRET_VARS=$(v2e)
+    eval "$SECRET_VARS"
+  elif [[ $SECRET_CONFIG_PATH && -f "${SECRET_CONFIG_PATH}" ]]; then
+    echo "Secret config set at ${SECRET_CONFIG_PATH}"
+    export SECRET_CONFIG=$(cat "${SECRET_CONFIG_PATH}")
+    SECRET_VARS=$(v2e)
+    eval "$SECRET_VARS"
+    # Implement custom path for config file
+  elif [[ -f "${WORK_DIR}/secret_config.json" ]]; then
+    echo "Secret config found at ${WORK_DIR}/secret_config.json"
+    export SECRET_CONFIG=$(cat ${WORK_DIR}/secret_config.json)
     SECRET_VARS=$(v2e)
     eval "$SECRET_VARS"
   fi
@@ -54,6 +66,6 @@ if [[ "$@" == "version" ]]; then
   exit 0
 fi
 
-cd /scripts
+cd ${WORK_DIR}
 
 exec "$@"

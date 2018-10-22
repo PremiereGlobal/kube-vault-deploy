@@ -1,3 +1,8 @@
+### 0.2.5
+* Added default file location for reading secret config.  In working directory, if file `secret_config.json` is found, it will be evaluated.
+* Added environment var `SECRET_CONFIG_PATH` for setting custom secret config path.
+* Fixed path issue with custom working directories
+
 ### 0.2.4
 * Fix error message when not mounting `/bin-cache`
 * Upped Vault default version to 0.11.1
