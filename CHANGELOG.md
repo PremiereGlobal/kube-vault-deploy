@@ -1,3 +1,7 @@
+### 0.2.6
+* Fixed bug with Helm match version path
+* Bumped Helm default version to 2.11
+
 ### 0.2.5
 * Added default file location for reading secret config.  In working directory, if file `secret_config.json` is found, it will be evaluated.
 * Added environment var `SECRET_CONFIG_PATH` for setting custom secret config path.
