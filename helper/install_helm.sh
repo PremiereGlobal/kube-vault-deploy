@@ -7,6 +7,6 @@ curl -L https://storage.googleapis.com/kubernetes-helm/helm-v${HELM_VERSION}-lin
   && tar -zxvf helm.tar.gz > /dev/null \
   && rm helm.tar.gz \
   && chmod +x linux-amd64/helm \
-  && mv linux-amd64/helm ${BIN_PATH}helm \
+  && mv linux-amd64/helm ${BIN_PATH}/helm \
   && rm -rf linux-amd64 \
   && helm version -c
