@@ -13,7 +13,7 @@ if [[ "$HELM_VERSION" != "" ]]; then
   echo "Installing custom Helm version ${HELM_VERSION}"
   install ${HELM_VERSION}
 elif [[ "$HELM_MATCH_SERVER" == "true" ]]; then
-  HELM_MATCH_VERSION=$(kubectl get  deploy tiller-deploy  --namespace=kube-system -o='jsonpath={.spec.template.spec.containers[0].image}' | sed 's/.*v\([0-9\.]*\)/\1/g')
+  HELM_MATCH_VERSION=$(helm version -s | sed 's/.*v\([0-9\.]\+\).*/\1/')
   if [ -z ${HELM_MATCH_VERSION} ]; then
     echo "Error: Getting Helm Tiller version from remote K8s server"
     exit 1

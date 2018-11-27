@@ -1,3 +1,7 @@
+### 0.2.7
+* Bumped Kubernetes default version to 1.10.8
+* Change helm version detection logic
+
 ### 0.2.6
 * Fixed bug with Helm match version path
 * Bumped Helm default version to 2.11
