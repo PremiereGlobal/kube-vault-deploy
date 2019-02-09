@@ -4,14 +4,11 @@
 # Dealing w/ secrets, don't output any commands
 # set -e
 set +x
-export PATH="${BIN_CACHE_DIR}:${PATH}"
+
 source /helper/get_versions.sh
-get_versions
 
 USING_K8S="false"
 USING_VAULT="false"
-WORK_DIR=$(pwd)
-cd /bin-cache
 
 # Set up Vault (if applicable)
 /helper/vault.sh
@@ -19,8 +16,11 @@ if [[ $? -eq 0 ]]; then
   USING_VAULT=true
 fi
 
-if [[ "$USING_VAULT" == "true" ]]; then
+if [[ "$USING_VAULT" == "true" || "${VAULT_VERSION}" != "" ]]; then
   /helper/version_vault.sh
+fi
+
+if [[ "$USING_VAULT" == "true" ]]; then
 
   # If the deploy needs additional secrets, get them using
   # https://github.com/ReadyTalk/vault-to-envs
@@ -47,8 +47,11 @@ if [[ $? -eq 0 ]]; then
   USING_K8S=true
 fi
 
-if [[ "$USING_K8S" == "true" ]]; then
+if [[ "$USING_K8S" == "true" || ${KUBE_VERSION} != "" ]]; then
   /helper/version_kube.sh
+fi
+
+if [[ "$USING_K8S" == "true" || ${HELM_VERSION} != "" ]]; then
   /helper/version_helm.sh
 fi
 
@@ -65,7 +68,5 @@ if [[ "$@" == "version" ]]; then
   echo "  aws: ${AWS_INSTALLED_VERSION}"
   exit 0
 fi
-
-cd ${WORK_DIR}
 
 exec "$@"

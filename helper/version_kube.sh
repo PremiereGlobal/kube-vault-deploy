@@ -1,8 +1,12 @@
 #!/bin/bash
 
 function install() {
-  if [[ "${1}" == "${KUBE_INSTALLED_VERSION}" ]]; then
-    echo "kubectl already matches version ${1}"
+  if [[ -f "/bin-local/kubectl-v${1}" ]]; then
+    echo "kubectl version ${1} exists in container, linking."
+    ln -sf /bin-local/kubectl-v${1} /usr/local/bin/kubectl
+  elif [[ -f "/bin-cache/kubectl-v${1}" ]]; then
+    echo "kubectl version ${1} exists in bin-cache, linking."
+    ln -sf /bin-cache/kubectl-v${1} /usr/local/bin/kubectl
   else
     echo "Installing kubectl version ${1}"
     /helper/install_kube.sh ${1} ${BIN_CACHE_DIR}

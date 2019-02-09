@@ -1,3 +1,10 @@
+### 0.2.8
+* Bumped Kubernetes (1.10.12), Helm (2.12.1) and Vault (1.0.0) versions
+* `/bin-cache` volume will now version binaries instead of overwrite them - this provides a more robust caching mechanism
+* Added Helm init and repo update on install
+* Added signature validation for downloaded binaries (kubectl, helm, kops, vault)
+* Download binaries if version set (even if it doesn't appear you're using it)
+
 ### 0.2.7
 * Bumped Kubernetes default version to 1.10.8
 * Change helm version detection logic

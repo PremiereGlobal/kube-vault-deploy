@@ -1,10 +1,13 @@
 #!/bin/bash
 
 # No way to detect which KOPS version was used so only change if it is requested.
-
 function install() {
-  if [[ "${1}" == "${KOPS_INSTALLED_VERSION}" ]]; then
-    echo "kops already matches version ${1}"
+  if [[ -f "/bin-local/kops-v${1}" ]]; then
+    echo "kops version ${1} exists in container, linking."
+    ln -sf /bin-local/kops-v${1} /usr/local/bin/kops
+  elif [[ -f "/bin-cache/kops-v${1}" ]]; then
+    echo "kops version ${1} exists in bin-cache, linking."
+    ln -sf /bin-cache/kops-v${1} /usr/local/bin/kops
   else
     echo "Installing kops version ${1}"
     /helper/install_kops.sh ${1} ${BIN_CACHE_DIR}

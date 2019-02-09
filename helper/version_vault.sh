@@ -1,8 +1,12 @@
 #!/bin/bash
 
 function install() {
-  if [[ "${1}" == "${VAULT_INSTALLED_VERSION}" ]]; then
-    echo "Vault already matches version ${1}"
+  if [[ -f "/bin-local/vault-v${1}" ]]; then
+    echo "vault version ${1} exists in container, linking."
+    ln -sf /bin-local/vault-v${1} /usr/local/bin/vault
+  elif [[ -f "/bin-cache/vault-v${1}" ]]; then
+    echo "vault version ${1} exists in bin-cache, linking."
+    ln -sf /bin-cache/vault-v${1} /usr/local/bin/vault
   else
     echo "Installing Vault version ${1}"
     /helper/install_vault.sh ${1} ${BIN_CACHE_DIR}

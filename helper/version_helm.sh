@@ -1,8 +1,12 @@
 #!/bin/bash
 
 function install() {
-  if [[ "${1}" == "${HELM_INSTALLED_VERSION}" ]]; then
-    echo "Helm already matches version ${1}"
+  if [[ -f "/bin-local/helm-v${1}" ]]; then
+    echo "helm version ${1} exists in container, linking."
+    ln -sf /bin-local/helm-v${1} /usr/local/bin/helm
+  elif [[ -f "/bin-cache/helm-v${1}" ]]; then
+    echo "helm version ${1} exists in bin-cache, linking."
+    ln -sf /bin-cache/helm-v${1} /usr/local/bin/helm
   else
     echo "Installing Helm version ${1}"
     /helper/install_helm.sh ${1} ${BIN_CACHE_DIR}
