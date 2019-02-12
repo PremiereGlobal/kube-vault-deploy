@@ -48,6 +48,4 @@ COPY entrypoint.sh /entrypoint.sh
 
 VOLUME /scripts
 
-WORKDIR /scripts
-
 ENTRYPOINT [ "/entrypoint.sh" ]

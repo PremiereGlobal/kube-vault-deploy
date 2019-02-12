@@ -69,4 +69,6 @@ if [[ "$@" == "version" ]]; then
   exit 0
 fi
 
+cd /scripts
+
 exec "$@"
