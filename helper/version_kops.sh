@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# exit when any command fails
+set -e
+
 # No way to detect which KOPS version was used so only change if it is requested.
 function install() {
   if [[ -f "/bin-local/kops-v${1}" ]]; then

@@ -1,6 +1,9 @@
 #!/bin/bash
 
-source /helper/sha.sh
+# exit when any command fails
+set -e
+
+source /installers/sha.sh
 
 KOPS_VERSION="${1:-$DEFAULT_KOPS_VERSION}"
 BIN_PATH="${2:-"/bin-local/"}"

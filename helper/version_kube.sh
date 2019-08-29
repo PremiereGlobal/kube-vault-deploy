@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# exit when any command fails
+set -e
+
 function install() {
   if [[ -f "/bin-local/kubectl-v${1}" ]]; then
     echo "kubectl version ${1} exists in container, linking."

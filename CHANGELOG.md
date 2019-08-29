@@ -1,3 +1,19 @@
+### 0.3.0
+* Now using [vault-to-env](https://github.com/PremiereGlobal/vault-to-envs) `v0.2.0` which supports Vault's key-value version 2 datastore
+* Fixed issue with `deploy.sh` not running by default
+* Removed Vault prompt to log in
+  *  This was due to increased difficulty providing enough options to
+* Removed `AUTO_BUILD` env var
+  * Wasn't doing much to begin with
+* Removed support for `CLUSTER_NAME` and `ACCOUNT_NAME` env vars for Kubernetes
+* Fixed and clarified README
+* Added `apacheutils` to the container
+* Bumped default versions
+  * Kubernetes to `1.11.9`
+  * Helm to `2.14.2`
+  * Vault to `1.1.2`
+  * Kops to `1.11.1`
+
 ### 0.2.9
 * Fixing issue with volume mounting read-only to `/scripts`
 

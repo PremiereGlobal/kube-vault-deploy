@@ -1,6 +1,9 @@
 #!/bin/bash
 
-source /helper/sha.sh
+# exit when any command fails
+set -e
+
+source /installers/sha.sh
 
 HELM_VERSION="${1:-$DEFAULT_HELM_VERSION}"
 BIN_PATH="${2:-"/bin-local/"}"

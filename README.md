@@ -1,61 +1,48 @@
 # Kubernetes Deployments w/ Vault
 
-Docker container for deploying to Kubernetes (via `kubectl` or `helm`) using Vault to authenticate.
-
-<!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
-
-- [Prerequisites](#prerequisites)
-- [Usage](#usage)
-	- [Dev/Local Deployments](#devlocal-deployments)
-	- [Pipeline Deployments](#pipeline-deployments)
-	- [Environment Variables](#environment-variables)
-	- [Volume Mounts](#volume-mounts)
-- [Deployment Scripts](#deployment-scripts)
-- [Example](#example)
-
-<!-- /TOC -->
+Docker container for deploying to Kubernetes (via `kubectl` or `helm`) using Vault to to retrieve secrets.
 
 ## Prerequisites
 
 * Kubernetes cluster
 * Vault instance
- * Pre-loaded secret w/ Kubernetes config
- * LDAP configured (optional)
 
-## Usage
+### Secret Config
+This container uses a secret config file which defines secret values to pull from Vault.  For more detail on the config file format, see [vault-to-envs tool](https://github.com/PremiereGlobal/vault-to-envs). There are several ways to get the config into this container:
+* Include an environment variable `SECRET_CONFIG` which contains the config text (json).
+* Mount a `secret_config` file into the working directory of the container and specify it's location with the `SECRET_CONFIG_PATH` env var
 
-There are two primary use cases for using this container.
+## Usage / Examples
 
-### Dev/Local Deployments
-
-Manual deployments to Kubernetes (via `kubectl` or `helm`) from individual workstation.  This scenario can utilize LDAP or VAULT_TOKEN environment variable for authentication.
-
-LDAP Method:
-```
-docker run --rm -it \
-    --name=kube-vault-deploy \
-    -e KUBE_CLUSTER=blue.my-domain.com \
-    -e VAULT_ADDR=https://vault.my-domain.com:8200 \
-    -e VAULT_KUBE_PATH=secret/kubernetes/blue.my-domain.com/kube-config \
-    -v ~/.vault-token-deploy:/vault-token:rw \
-    -v $(pwd)/deploy:/scripts:ro \
-    readytalk/kube-vault-deploy
-```
-
-### Pipeline Deployments
-
-Scripted/Automated deployments to Kubernetes (via `kubectl` or `helm`) from CI tools such as Jenkins/Travis.  This scenario will required that a VAULT_TOKEN be passed into the container for authentication.
-
+### Basic usage
 ```
 docker run --rm \
-    --name=kube-vault-deploy \
-    -e AUTO_BUILD=true \
-    -e KUBE_CLUSTER=blue.my-domain.com \
-    -e VAULT_ADDR=https://vault.my-domain.com:8200 \
-    -e VAULT_KUBE_PATH=secret/kubernetes/blue.my-domain.com/kube-config \
-    -e VAULT_TOKEN=$VAULT_TOKEN \
-    -v $(pwd)/deploy:/scripts:ro \
-    readytalk/kube-vault-deploy
+  -e VAULT_ADDR=https://vault.my-domain.com:8200 \
+	-e VAULT_TOKEN=${VAULT_TOKEN} \
+  -e SECRET_CONFIG="$(cat secret_config.json)" \
+  -v $(pwd)/deploy:/scripts:ro \
+  PremiereGlobal/kube-vault-deploy
+```
+
+### Passing Vault token and secret config in as files
+```
+docker run --rm \
+  -e VAULT_ADDR=https://vault.my-domain.com:8200 \
+	-v ${HOME}/.vault-token=/vault-token \
+  -v $(pwd)/secret_config.json:/secrets/config.json \
+  -e SECRET_CONFIG_PATH=/secrets/config.json \
+  -v $(pwd)/deploy:/scripts:ro \
+  PremiereGlobal/kube-vault-deploy
+```
+
+### Custom script name
+```
+docker run --rm \
+  -e VAULT_ADDR=https://vault.my-domain.com:8200 \
+  -e VAULT_TOKEN=${VAULT_TOKEN} \
+  -e SECRET_CONFIG="$(cat secret_config.json)" \
+  -v $(pwd)/deploy:/scripts:ro \
+  PremiereGlobal/kube-vault-deploy
 ```
 
 ### Environment Variables
@@ -67,9 +54,7 @@ of this parameter has the format `<VARIABLE_NAME>=<VALUE>`.
 | Variable       | Description                                  | Default/Required |
 |----------------|----------------------------------------------|---------|
 |`VAULT_ADDR`| The full address of the instance of vault to connect to. For example `https://vault.my-domain.com:8200` | required |
-|`VAULT_TOKEN`| Vault token to use for authentication. If not set and AUTO_BUILD=false, will prompt for LDAP credentials. | `` |
-|`AUTO_BUILD`| Flag that controls the behavior of the authentication mechanism.  If set to `true`, will not prompt for LDAP user/pass but instead will fail if `VAULT_TOKEN` is not provided. | `false` |
-|`KUBE_CLUSTER`| This is the name of the Kubernetes cluster you want to deploy to.  For example `blue.my-domain.com`. | required |
+|`VAULT_TOKEN`| Vault token to use for authentication. | `` |
 |`SECRET_CONFIG`| JSON text representing secrets to pull from Vault. See [Secret Config](#secret-config) section below. | `` |
 |`SECRET_CONFIG_PATH`| Path for secret config file. See [Secret Config](#secret-config) section below. Will only be used if `SECRET_CONFIG` is not set. | `` |
 |`HELM_MATCH_SERVER`| If set to `true`, downloads the helm version to match the version of the Tiller installed on the cluster. | `true` |
@@ -93,11 +78,6 @@ format: `<HOST_DIR>:<CONTAINER_DIR>[:PERMISSIONS]`.
 |`/scripts`| ro | This location contains deploy scripts from your host that need to be accessible by the application. |
 |`/vault-token`| rw | This is an optional volume where the application stores the authenticated vault token. It is recommended this not be set for production/pipeline jobs.  For local development, it is recommended you mount this to  `~/.vault-token` (be sure to create that file first or Docker will create it as a directory and it will fail) on the host so that you don't have to auth every time you run the container. |
 |`/bin-cache`| rw | This is an optional volume where custom binary versions (kubectl, vault, etc) will be stored.  This can be mounted locally to cache these binaries so they don't have to be downloaded every run. |
-
-### Secret Config
-A secret config, which defines secret values to pull from Vault, can be passed into this container.  For more detail on the config file format, see [vault-to-envs tool](https://github.com/ReadyTalk/vault-to-envs). There are several ways to get the config into this container:
-* Include an environment variable `SECRET_CONFIG` which contains the config text (json).
-* Include a file named `secret_config.json` into the working directory of the container (most commonly by volume mounts)
 
 ## Deployment Scripts
 
@@ -138,14 +118,13 @@ helm upgrade --values helm_chart/values-$HELM_ENV.yaml $HELM_ENV-release helm_ch
 
 From the project root we can run
 ```
-docker run --rm -it \
-    --name=kube-vault-deploy \
+docker run --rm \
     -e VAULT_ADDR=https://vault.my-domain.com:8200 \
-    -e KUBE_CLUSTER=blue.my-domain.com \
-    -e VAULT_KUBE_PATH=secret/kubernetes/blue.my-domain.com/kube-config \
+		-e VAULT_TOKEN=$(cat ~/.vault-token)
+		-e SECRET_CONFIG=${SECRET_CONFIG} \
     -e HELM_ENV=dev \
     -v $(pwd)/deploy:/scripts:ro \
-    readytalk/kube-vault-deploy
+    PremiereGlobal/kube-vault-deploy
 ```
 
 From there the following will happen:

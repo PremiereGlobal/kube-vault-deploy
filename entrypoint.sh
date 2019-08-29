@@ -2,7 +2,7 @@
 
 # Fail if any command fails
 # Dealing w/ secrets, don't output any commands
-# set -e
+set -e
 set +x
 
 source /helper/get_versions.sh
@@ -11,9 +11,13 @@ USING_K8S="false"
 USING_VAULT="false"
 
 # Set up Vault (if applicable)
-/helper/vault.sh
-if [[ $? -eq 0 ]]; then
+if [ "${VAULT_ADDR}" ] && [ "${VAULT_ADDR}" != "" ]; then
+  T=$(/helper/vault.sh)
+  export VAULT_TOKEN=$T
   USING_VAULT=true
+else
+  echo "Vault not configured (VAULT_ADDR is not set)"
+  USING_VAULT=false
 fi
 
 if [[ "$USING_VAULT" == "true" || "${VAULT_VERSION}" != "" ]]; then
@@ -42,10 +46,14 @@ if [[ "$USING_VAULT" == "true" ]]; then
 fi
 
 # Set up Kubernetes context (if applicable)
-/helper/kubernetes.sh
-if [[ $? -eq 0 ]]; then
+if [ "$CLUSTER_SERVER" -a "${CLUSTER_CA}" -a "${USER_TOKEN}" ]; then
+  /helper/kubernetes.sh
   USING_K8S=true
+else
+  echo "Kubernetes not configured (CLUSTER_SERVER, CLUSTER_CA and USER_TOKEN are not set)"
+  USING_K8S=false
 fi
+
 
 if [[ "$USING_K8S" == "true" || ${KUBE_VERSION} != "" ]]; then
   /helper/version_kube.sh
