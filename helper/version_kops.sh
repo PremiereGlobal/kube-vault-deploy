@@ -13,7 +13,7 @@ function install() {
     ln -sf /bin-cache/kops-v${1} /usr/local/bin/kops
   else
     echo "Installing kops version ${1}"
-    /helper/install_kops.sh ${1} ${BIN_CACHE_DIR}
+    /installers/install_kops.sh ${1} ${BIN_CACHE_DIR}
   fi
 }
 

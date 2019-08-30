@@ -12,7 +12,7 @@ function install() {
     ln -sf /bin-cache/helm-v${1} /usr/local/bin/helm
   else
     echo "Installing Helm version ${1}"
-    /helper/install_helm.sh ${1} ${BIN_CACHE_DIR}
+    /installers/install_helm.sh ${1} ${BIN_CACHE_DIR}
   fi
 }
 

@@ -12,7 +12,7 @@ function install() {
     ln -sf /bin-cache/vault-v${1} /usr/local/bin/vault
   else
     echo "Installing Vault version ${1}"
-    /helper/install_vault.sh ${1} ${BIN_CACHE_DIR}
+    /installers/install_vault.sh ${1} ${BIN_CACHE_DIR}
   fi
 }
 

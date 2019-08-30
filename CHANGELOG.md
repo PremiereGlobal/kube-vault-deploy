@@ -1,3 +1,6 @@
+### 0.3.1
+* Fixing bug with version matching path
+
 ### 0.3.0
 * Now using [vault-to-env](https://github.com/PremiereGlobal/vault-to-envs) `v0.2.0` which supports Vault's key-value version 2 datastore
 * Fixed issue with `deploy.sh` not running by default

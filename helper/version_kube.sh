@@ -12,7 +12,7 @@ function install() {
     ln -sf /bin-cache/kubectl-v${1} /usr/local/bin/kubectl
   else
     echo "Installing kubectl version ${1}"
-    /helper/install_kube.sh ${1} ${BIN_CACHE_DIR}
+    /installers/install_kube.sh ${1} ${BIN_CACHE_DIR}
   fi
 }
 
