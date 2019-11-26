@@ -1,3 +1,6 @@
+### 0.3.2
+* Added support for helm3 downloading
+
 ### 0.3.1
 * Fixing bug with version matching path
 
