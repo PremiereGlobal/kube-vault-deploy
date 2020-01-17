@@ -34,4 +34,6 @@ HELMV=${HELM_VERSION:0:1}
 if [[ "${HELMV}" != "3" ]]; then 
   helm init --client-only
 fi
-helm repo update
+
+# If we have repos, update them
+helm repo update 2>/dev/null || true
