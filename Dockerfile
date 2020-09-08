@@ -1,22 +1,22 @@
-FROM alpine
+FROM alpine:3.12
 
 RUN \
   set -x && \
   apk update && \
-  apk -Uuv add bash curl zip jq groff less python py2-pip bash jq curl wget ca-certificates openssl zip git apache2-utils && \
-  pip install awscli yq && \
-  apk --purge -v del py2-pip && \
+  apk -Uuv add bash curl zip jq groff less python3 py3-pip bash jq curl wget ca-certificates openssl zip git apache2-utils && \
+  pip3 install awscli yq && \
+  apk --purge -v del py3-pip && \
   rm /var/cache/apk/*
 
 WORKDIR /tmp
 
 ENV BIN_CACHE_DIR=/bin-cache \
-  DEFAULT_KUBE_VERSION=1.11.9 \
-  DEFAULT_KOPS_VERSION=1.11.1 \
-  DEFAULT_VAULT_VERSION=1.1.2 \
-  DEFAULT_HELM_VERSION=2.14.2 \
+  DEFAULT_KUBE_VERSION=1.19.0 \
+  DEFAULT_KOPS_VERSION=1.17.0 \
+  DEFAULT_VAULT_VERSION=1.5.3 \
+  DEFAULT_HELM_VERSION=3.3.1 \
   V2E_VERSION=0.2.0 \
-  STIM_VERSION=0.0.6 \
+  STIM_VERSION=0.1.7 \
   HELM_MATCH_SERVER=true \
   KUBE_MATCH_SERVER=true \
   VAULT_MATCH_SERVER=true

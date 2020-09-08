@@ -12,8 +12,8 @@ BIN_PATH="${2:-"/bin-local/"}"
 curl -LO https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl
 
 # Verify download
-SHA=$(curl -L https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl.sha1)
-if [ $(verifysha1 kubectl ${SHA}) -ne 0 ]; then
+SHA=$(curl -L https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl.sha256)
+if [ $(verifysha256 kubectl ${SHA}) -ne 0 ]; then
   echo "Error validating kubectl binary signature"
   exit 1
 fi

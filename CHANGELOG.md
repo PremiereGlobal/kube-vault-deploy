@@ -1,3 +1,14 @@
+### 0.3.4
+* Locked version of base image (alpine)
+* Updated awscli and yq to py3 versions
+* Bumpped the following tools' default version:
+  * `kubectl v1.19.0`
+  * `kops v1.17.0`
+  * `vault v1.5.3`
+  * `helm v3.3.1`
+  * `stim v0.1.7`
+* Fixed checksum issue with `kubectl` tool
+
 ### 0.3.3
 * Fixed bug where having no Helm repos cause script to exit with error
 
