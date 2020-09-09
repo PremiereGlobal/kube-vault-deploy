@@ -3,7 +3,7 @@ FROM alpine:3.12
 RUN \
   set -x && \
   apk update && \
-  apk -Uuv add bash curl zip jq groff less python3 py3-pip bash jq curl wget ca-certificates openssl zip git apache2-utils && \
+  apk -Uuv add bash curl zip jq groff less python3 py3-pip bash jq curl wget ca-certificates openssl zip git apache2-utils py3-six py3-urllib3 py3-colorama && \
   pip3 install awscli yq && \
   apk --purge -v del py3-pip && \
   rm /var/cache/apk/*

@@ -1,7 +1,11 @@
 ### 0.3.4
 * Locked version of base image (alpine)
 * Updated awscli and yq to py3 versions
-* Bumpped the following tools' default version:
+* Added awscli on py3 dependencies:
+  * `py3-six`
+  * `py3-urllib3`
+  * `py3-colorama`
+* Bumped the following tools' default version:
   * `kubectl v1.19.0`
   * `kops v1.17.0`
   * `vault v1.5.3`
